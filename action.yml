@@ -1,0 +1,33 @@
+name: setup-bqvalid
+description: Install bqvalid, a SQL validator for BigQuery standard SQL, and add it to PATH.
+author: hirosassa
+branding:
+  icon: check-circle
+  color: blue
+
+inputs:
+  version:
+    description: 'Version of bqvalid to install (e.g. "0.3.0" or "v0.3.0"). Use "latest" for the newest release.'
+    required: false
+    default: latest
+  github-token:
+    description: 'Token used to query the GitHub API when resolving the latest release. Defaults to the workflow token.'
+    required: false
+    default: ${{ github.token }}
+
+outputs:
+  version:
+    description: 'The resolved bqvalid version that was installed (without the leading "v").'
+    value: ${{ steps.install.outputs.version }}
+
+runs:
+  using: composite
+  steps:
+    - id: install
+      shell: bash
+      env:
+        INPUT_VERSION: ${{ inputs.version }}
+        GITHUB_TOKEN: ${{ inputs.github-token }}
+      run: |
+        chmod +x "${GITHUB_ACTION_PATH}/scripts/resolve_asset.sh" "${GITHUB_ACTION_PATH}/scripts/install.sh"
+        "${GITHUB_ACTION_PATH}/scripts/install.sh"

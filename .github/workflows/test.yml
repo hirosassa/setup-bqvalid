@@ -1,0 +1,57 @@
+name: test
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install bats
+        run: sudo apt-get update && sudo apt-get install -y bats
+      - name: shellcheck
+        run: shellcheck scripts/*.sh
+      - name: bats
+        run: bats test/
+
+  test:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, macos-13, windows-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - id: setup
+        uses: ./
+      - name: Verify bqvalid is on PATH
+        shell: bash
+        run: bqvalid --version
+      - name: Verify the version output is set
+        shell: bash
+        run: |
+          if [[ -z "${{ steps.setup.outputs.version }}" ]]; then
+            echo "version output was empty" >&2
+            exit 1
+          fi
+          echo "installed version: ${{ steps.setup.outputs.version }}"
+
+  test-pinned-version:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - id: setup
+        uses: ./
+        with:
+          version: 0.3.0
+      - name: Verify the pinned version was installed
+        shell: bash
+        run: |
+          bqvalid --version | grep -q "0.3.0"
+          [[ "${{ steps.setup.outputs.version }}" == "0.3.0" ]]
