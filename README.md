@@ -39,20 +39,6 @@ run `bqvalid` directly.
 - run: echo "Installed bqvalid ${{ steps.bqvalid.outputs.version }}"
 ```
 
-## Supported platforms
-
-bqvalid ships prebuilt binaries for the following runner platforms:
-
-| Runner OS | Architecture | Supported |
-| --------- | ------------ | --------- |
-| Linux     | x86_64       | ✅        |
-| macOS     | x86_64       | ✅        |
-| macOS     | arm64        | ✅        |
-| Windows   | x86_64       | ✅        |
-
-Other combinations (for example Linux arm64) are not published upstream and the
-action fails with a clear error on those runners.
-
 ## License
 
 [MIT](./LICENSE)
